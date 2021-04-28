@@ -10,6 +10,7 @@
 using namespace std;
 
 #define WHITESPACE " "
+#define BACKSLASH "/"
 
 #if 0
 #define FUNC_ENTRY()  \
@@ -54,6 +55,24 @@ int _parseCommandLine(const char* cmd_line, char** args) {
   FUNC_EXIT()
 }
 
+int _parsePath(const char* path, char** args) {
+  FUNC_ENTRY()
+  int i = 0;
+  std::istringstream iss(_trim(string(cmd_line)).c_str());
+  for(std::string s; iss >> s; ) {
+    args[i] = (char*)malloc(s.length()+1);
+    memset(args[i], 0, s.length()+1);
+    strcpy(args[i], s.c_str());
+    args[++i] = NULL;
+  }
+  return i;
+
+  int i = 0;
+  
+
+  FUNC_EXIT()
+}
+
 bool _isBackgroundComamnd(const char* cmd_line) {
   const string str(cmd_line);
   return str[str.find_last_not_of(WHITESPACE)] == '&';
@@ -79,13 +98,17 @@ void _removeBackgroundSign(char* cmd_line) {
 
 // TODO: Add your implementation for classes in Commands.h 
 
+//---------------------------------------------------_____Smalll Shell_____---------------------------------------//
 SmallShell::SmallShell() {
 // TODO: add your implementation
   prompt = "smash> ";
+  OLDPWD[0] = NULL;
 }
 
 SmallShell::~SmallShell() {
 // TODO: add your implementation
+
+
 }
 
 /**
@@ -105,6 +128,11 @@ else if(firstWord.compare("showpid") == 0)
 {
   return new ShowPidCommand(cmd_line);
 }
+else if (firstWord.compare("pwd") == 0)
+{
+  return new GetCurrDirCommand(cmd_line);
+}
+
 
 /*
   if (firstWord.compare("pwd") == 0) {
@@ -212,4 +240,17 @@ ShowPidCommand::ShowPidCommand(const char* cmd_line)
 void ShowPidCommand::execute()
 {
   std::cout << "smash pid is " << this->pid << std::endl;
+}
+
+//----GetCurrDirCommand
+//C'tor
+GetCurrDirCommand::GetCurrDirCommand(const char* cmd_line)
+:BuiltInCommand(cmd_line)
+{
+  path = getcwd(path, COMMAND_ARGS_MAX_LENGTH);
+}
+
+void GetCurrDirCommand::execute()
+{
+  cout<<path<<endl;
 }

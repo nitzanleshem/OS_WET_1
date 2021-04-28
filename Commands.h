@@ -28,6 +28,7 @@ class SmallShell
  private:
   // TODO: Add your data members
   std::string prompt;
+  char* OLDPWD[COMMAND_ARGS_MAX_LENGTH];
   SmallShell();
 
  public:
@@ -105,6 +106,7 @@ class ChangeDirCommand : public BuiltInCommand {
 
 class GetCurrDirCommand : public BuiltInCommand {
  public:
+  char* path;
   GetCurrDirCommand(const char* cmd_line);
   virtual ~GetCurrDirCommand() {}
   void execute() override;

@@ -82,7 +82,6 @@ void _removeBackgroundSign(char* cmd_line) {
 SmallShell::SmallShell() {
 // TODO: add your implementation
   prompt = "smash> ";
-  pid = getpid();
 }
 
 SmallShell::~SmallShell() {
@@ -101,6 +100,10 @@ string firstWord = cmd_s.substr(0, cmd_s.find_first_of(" \n"));
 if(firstWord.compare("chprompt") == 0)
 {
   return new ChpromptCommand(cmd_line, this);
+}
+else if(firstWord.compare("showpid") == 0)
+{
+  return new ShowPidCommand(cmd_line);
 }
 
 /*
@@ -195,4 +198,18 @@ void ChpromptCommand::execute()
   //cout<<this->name;
   this->smash->setPrompt(this->name);
   //cout<<this->smash->getPrompt();
+}
+
+//----ShowPidCommand
+//C'tor
+ShowPidCommand::ShowPidCommand(const char* cmd_line)
+:BuiltInCommand(cmd_line)
+{
+  this->pid = getpid();
+  
+}
+
+void ShowPidCommand::execute()
+{
+  std::cout << "smash pid is " << this->pid << std::endl;
 }

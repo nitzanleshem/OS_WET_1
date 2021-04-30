@@ -99,6 +99,7 @@ class ChpromptCommand : public BuiltInCommand {
 
 class ChangeDirCommand : public BuiltInCommand {
 // TODO: Add your data members public:
+  char* newPath;
   ChangeDirCommand(const char* cmd_line, char** plastPwd);
   virtual ~ChangeDirCommand() {}
   void execute() override;

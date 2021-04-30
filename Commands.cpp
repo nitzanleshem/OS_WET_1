@@ -12,6 +12,17 @@ using namespace std;
 #define WHITESPACE " "
 #define BACKSLASH "/"
 
+/*
+* Macro providing a “safe” way to invoke system calls
+*/
+#define DO_SYS( syscall ) do { \
+/* safely invoke a system call */ \
+if( (syscall) == -1 ) { \
+perror( #syscall ); \
+exit(1); \
+} \
+} while( 0 )
+
 #if 0
 #define FUNC_ENTRY()  \
   cout << __PRETTY_FUNCTION__ << " --> " << endl;
@@ -118,8 +129,13 @@ else if (firstWord.compare("cd") == 0)
 {
   return new ChangeDirCommand(cmd_line,this->OLDPWD);
 }
-  return nullptr;
+else if (firstWord.compare("quit") == 0)
+{
+  return new QuitCommand(cmd_line,&this->jobs,getpid());
 }
+return nullptr;
+}
+
 
 void SmallShell::executeCommand(const char *cmd_line) {
   // TODO: Add your implementation here
@@ -148,7 +164,14 @@ void SmallShell::executeCommand(const char *cmd_line) {
 //C'tor
 Command::Command(const char* cmd_line)
 {
-  num_of_args = _parseCommandLine(cmd_line, args);
+  if(_isBackgroundComamnd(cmd_line))
+  {
+    background = true;
+    
+  }
+  string clean_cmd(cmd_line);
+  clean_cmd = clean_cmd.substr(0,clean_cmd.find_last_not_of(WHITESPACE));
+  num_of_args = _parseCommandLine(clean_cmd.c_str(), args);
 }
 
 //D'tor
@@ -234,7 +257,14 @@ void GetCurrDirCommand::execute()
 ChangeDirCommand::ChangeDirCommand(const char* cmd_line, char** plastPwd)
 :BuiltInCommand(cmd_line)
 {
+  if(num_of_args != 1)
+  {
   this->newPath = args[1];
+  }
+  else
+  {
+    this->newPath = "";
+  }
   this->OLDPWD = plastPwd;
 }
 
@@ -274,5 +304,44 @@ void ChangeDirCommand::execute()
     //TODO ERROR Syserror 
     std::cout<<"path failed TODO"<<std::endl;
     }
+  }
+}
+
+
+//------QuitCommand
+
+QuitCommand::QuitCommand(const char* cmd_line, JobsList* jobs,pid_t smash_pid)
+:BuiltInCommand(cmd_line),
+smash_pid(smash_pid),
+jobs(jobs)
+{}
+
+void QuitCommand::execute()
+{
+  if(num_of_args >> 1)
+  {
+    std::string arg = args[1];
+    if(arg.compare("kill") == 0)
+    {
+      //kill all jobs
+      std::cout<<"smash: sending SIGKILL signal to "<< jobs->jobsMap.size() << "jobs:" << std::endl;
+      for (auto itr = jobs->jobsMap.begin();itr != jobs->jobsMap.end(); itr++)
+      {
+        std::cout<<itr->second.jobPID << ": " << itr->second.cmd_line << std::endl;
+      }
+      jobs->killAllJobs();
+    }
+  }
+  kill(smash_pid,9);
+}
+
+
+//----- KILLALLJOBS !
+
+void JobsList::killAllJobs()
+{
+  for (auto itr = jobsMap.begin();itr != jobsMap.end(); itr++)
+  {
+    kill(itr->second.jobPID,9);
   }
 }

@@ -11,6 +11,7 @@ class Command {
 // TODO: Add your data members
 private:
 protected:
+  bool background = false;
   bool forked = false;
   int num_of_args;
   char* args[COMMAND_MAX_ARGS];
@@ -24,12 +25,43 @@ public:
   // TODO: Add your extra methods if needed
 };
 
+enum JOB_STATUS {FOREGROUND,BACKGROUND,STOPPED};
+
+class JobsList {
+ public:
+  class JobEntry 
+  {
+   // TODO: Add your data members
+    public:
+    long jobID;
+    pid_t jobPID;
+    JOB_STATUS status;
+    char* cmd_line;
+    //TODO Add time
+  };
+ // TODO: Add your data members
+ public:
+  std::map<long,JobEntry> jobsMap;
+  JobsList();
+  ~JobsList();
+  void addJob(Command* cmd, bool isStopped = false);
+  void printJobsList();
+  void killAllJobs();
+  void removeFinishedJobs();
+  JobEntry * getJobById(int jobId);
+  void removeJobById(int jobId);
+  JobEntry * getLastJob(int* lastJobId);
+  JobEntry *getLastStoppedJob(int *jobId);
+  // TODO: Add extra methods or modify exisitng ones as needed
+};
+
 class SmallShell 
 {
  private:
   // TODO: Add your data members
   std::string prompt;
   char* OLDPWD[COMMAND_ARGS_MAX_LENGTH];
+  JobsList jobs;
   SmallShell();
 
  public:
@@ -127,39 +159,16 @@ class ShowPidCommand : public BuiltInCommand {
 class JobsList;
 class QuitCommand : public BuiltInCommand {
 // TODO: Add your data members public:
-  QuitCommand(const char* cmd_line, JobsList* jobs);
+  public:
+  pid_t smash_pid;
+  JobsList* jobs;
+  QuitCommand(const char* cmd_line, JobsList* jobs, pid_t smash_pid);
   virtual ~QuitCommand() {}
   void execute() override;
 };
 
 
-enum JOB_STATUS {FOREGROUND,BACKGROUND,STOPPED};
 
-class JobsList {
- public:
-  class JobEntry 
-  {
-   // TODO: Add your data members
-    long jobID;
-    long jobPID;
-    JOB_STATUS status;
-    //TODO Add time
-  };
- // TODO: Add your data members
- public:
-  std::map<long,JobEntry> jobMap;
-  JobsList();
-  ~JobsList();
-  void addJob(Command* cmd, bool isStopped = false);
-  void printJobsList();
-  void killAllJobs();
-  void removeFinishedJobs();
-  JobEntry * getJobById(int jobId);
-  void removeJobById(int jobId);
-  JobEntry * getLastJob(int* lastJobId);
-  JobEntry *getLastStoppedJob(int *jobId);
-  // TODO: Add extra methods or modify exisitng ones as needed
-};
 
 class JobsCommand : public BuiltInCommand {
  // TODO: Add your data members

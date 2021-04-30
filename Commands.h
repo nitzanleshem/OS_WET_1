@@ -1,6 +1,7 @@
 #ifndef SMASH_COMMAND_H_
 #define SMASH_COMMAND_H_
-
+#include <map>
+#include <iterator>
 #include <vector>
 #include <string>
 #define COMMAND_ARGS_MAX_LENGTH (200)
@@ -132,15 +133,21 @@ class QuitCommand : public BuiltInCommand {
 };
 
 
-
+enum JOB_STATUS {FOREGROUND,BACKGROUND,STOPPED};
 
 class JobsList {
  public:
-  class JobEntry {
+  class JobEntry 
+  {
    // TODO: Add your data members
+    long jobID;
+    long jobPID;
+    JOB_STATUS status;
+    //TODO Add time
   };
  // TODO: Add your data members
  public:
+  std::map<long,JobEntry> jobMap;
   JobsList();
   ~JobsList();
   void addJob(Command* cmd, bool isStopped = false);

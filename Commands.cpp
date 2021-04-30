@@ -118,21 +118,6 @@ else if (firstWord.compare("cd") == 0)
 {
   return new ChangeDirCommand(cmd_line,this->OLDPWD);
 }
-
-
-/*
-  if (firstWord.compare("pwd") == 0) {
-    return new GetCurrDirCommand(cmd_line);
-  }
-  else if (firstWord.compare("showpid") == 0) {
-    return new ShowPidCommand(cmd_line);
-  }
-  else if ...
-  .....
-  else {
-    return new ExternalCommand(cmd_line);
-  }
-  */
   return nullptr;
 }
 
@@ -143,16 +128,19 @@ void SmallShell::executeCommand(const char *cmd_line) {
   // cmd->execute();
   // Please note that you must fork smash process for some commands (e.g., external commands....)
   Command* cmd = CreateCommand(cmd_line);
-  if(cmd->isForked() == true)
+  if(cmd != nullptr)
   {
-    //fork process
+   if(cmd->isForked() == true)
+   {
+     //fork process
+   }
+   else
+   {
+     //no fork
+     cmd->execute();
+   }
   }
-  else
-  {
-    //no fork
-    cmd->execute();
-  }
-  
+   
 } 
 
 

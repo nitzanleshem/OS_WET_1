@@ -84,7 +84,7 @@ void _removeBackgroundSign(char* cmd_line) {
 SmallShell::SmallShell() {
 // TODO: add your implementation
   prompt = "smash> ";
-  OLDPWD[0] = NULL;
+  *OLDPWD = NULL;
 }
 
 SmallShell::~SmallShell() {
@@ -113,6 +113,10 @@ else if(firstWord.compare("showpid") == 0)
 else if (firstWord.compare("pwd") == 0)
 {
   return new GetCurrDirCommand(cmd_line);
+}
+else if (firstWord.compare("cd") == 0)
+{
+  return new ChangeDirCommand(cmd_line,this->OLDPWD);
 }
 
 
@@ -235,4 +239,47 @@ GetCurrDirCommand::GetCurrDirCommand(const char* cmd_line)
 void GetCurrDirCommand::execute()
 {
   cout<<path<<endl;
+}
+
+//-----ChangeDirCommand
+
+ChangeDirCommand::ChangeDirCommand(const char* cmd_line, char** plastPwd)
+:BuiltInCommand(cmd_line)
+{
+  this->newPath = args[1];
+  this->OLDPWD = plastPwd;
+}
+
+void ChangeDirCommand::execute()
+{
+  if(num_of_args > 2)
+  { 
+    //TODO ERROR too many args
+  }
+  else
+  {
+    char* currpath = NULL;
+    currpath = getcwd(currpath, COMMAND_ARGS_MAX_LENGTH); 
+    if(*newPath == '-')
+    {
+      if(*(this->OLDPWD) == NULL)
+      {
+        //TODO ERROR OLDPWD NOT SET
+      }
+      else
+      {
+        //Change newpath to old DIr
+        this->newPath = *(this->OLDPWD);
+      }
+    }
+    if(chdir(newPath) != -1)
+    {
+     *(this->OLDPWD) = currpath;
+    }
+    else
+    {
+    //TODO ERROR Syserror 
+    std::cout<<"path failed TODO"<<std::endl;
+    }
+  }
 }

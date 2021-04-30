@@ -100,7 +100,7 @@ class ChpromptCommand : public BuiltInCommand {
 class ChangeDirCommand : public BuiltInCommand {
 // TODO: Add your data members public:
 public:
-  char* newPath;
+  std::string newPath;
   char** OLDPWD;
   ChangeDirCommand(const char* cmd_line, char** plastPwd);
   virtual ~ChangeDirCommand() {}

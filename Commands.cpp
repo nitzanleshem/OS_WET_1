@@ -260,7 +260,7 @@ void ChangeDirCommand::execute()
   {
     char* currpath = NULL;
     currpath = getcwd(currpath, COMMAND_ARGS_MAX_LENGTH); 
-    if(*newPath == '-')
+    if(newPath.compare("-") == 0)
     {
       if(*(this->OLDPWD) == NULL)
       {
@@ -272,7 +272,12 @@ void ChangeDirCommand::execute()
         this->newPath = *(this->OLDPWD);
       }
     }
-    if(chdir(newPath) != -1)
+    else if(newPath.compare("..") == 0)
+    {
+      std::string curr = currpath;
+      this->newPath = curr.substr(0,curr.find_last_of('/'));
+    }
+    if(chdir(newPath.c_str()) != -1)
     {
      *(this->OLDPWD) = currpath;
     }

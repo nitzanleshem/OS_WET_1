@@ -23,15 +23,16 @@ public:
   //virtual void cleanup();
   // TODO: Add your extra methods if needed
 };
-
+class JobsList;
 class SmallShell 
 {
  private:
   // TODO: Add your data members
   std::string prompt;
   char* OLDPWD[COMMAND_ARGS_MAX_LENGTH];
+  time_t time;
+  JobsList jobs;
   SmallShell();
-
  public:
   Command *CreateCommand(const char* cmd_line);
   SmallShell(SmallShell const&)      = delete; // disable copy ctor
@@ -124,7 +125,7 @@ class ShowPidCommand : public BuiltInCommand {
   void execute() override;
 };
 
-class JobsList;
+
 class QuitCommand : public BuiltInCommand {
 // TODO: Add your data members public:
   QuitCommand(const char* cmd_line, JobsList* jobs);
@@ -139,15 +140,21 @@ class JobsList {
  public:
   class JobEntry 
   {
-   // TODO: Add your data members
-    long jobID;
-    long jobPID;
-    JOB_STATUS status;
-    //TODO Add time
+    private:
+
+      long jobID;
+      pid_t jobPID;
+      JOB_STATUS status;
+      char* cmd_line;
+      time_t time;
+    public:
+      JobEntry(long jobID, pid_t jobPID, JOB_STATUS status, char* cmd_line);
+      ~JobEntry() = default;
+
   };
  // TODO: Add your data members
  public:
-  std::map<long,JobEntry> jobMap;
+  std::map<long,JobEntry> jobsMap;
   JobsList();
   ~JobsList();
   void addJob(Command* cmd, bool isStopped = false);

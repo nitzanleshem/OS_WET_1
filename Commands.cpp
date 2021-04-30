@@ -85,6 +85,8 @@ SmallShell::SmallShell() {
 // TODO: add your implementation
   prompt = "smash> ";
   *OLDPWD = NULL;
+  time = time(NULL);
+  jobs = JobsList();
 }
 
 SmallShell::~SmallShell() {
@@ -275,4 +277,17 @@ void ChangeDirCommand::execute()
     std::cout<<"path failed TODO"<<std::endl;
     }
   }
+}
+
+//----------------------JobEntry--------------------------------
+JobsList::JobEntry::JobEntry(long jobID, pid_t jobPID, JOB_STATUS status, char* cmd_line):
+jobID(jobID),
+jobPID(jobPID),
+status(status),
+cmd_line(cmd_line),
+time(time(NULL))
+{}
+//----------------------JobsList--------------------------------
+JobsList::JobsList(){
+  jobsMap = map<long, JobEntry>();
 }
